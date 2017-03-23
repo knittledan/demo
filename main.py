@@ -6,7 +6,7 @@
 from util import authorize, RestException, which_method, rest_response
 from mongo import connect
 import logging
-
+from json import dumps
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 
@@ -43,13 +43,3 @@ def category(event, context, exception=None):
         return e.response
     except Exception as e:
         return e
-
-
-if __name__ == "__main__":
-    aws_event = {
-        'header': {'Authorization': 'Bearer 4bb074faf1b1f7d88910d94debed11e3'},
-        'path': {},
-        'context': {'http_method': 'GET'}
-    }
-    aws_context = type('', (object,), {'function_name': 'category'})()
-    print(category(aws_event, aws_context))

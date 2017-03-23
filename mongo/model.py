@@ -5,6 +5,9 @@
 # ------------------------------------------------------------------------------
 from pymongo.collection import Collection
 from datetime import datetime
+
+from pymongo.errors import DuplicateKeyError
+
 from util import RestException
 
 def encoder(data):
@@ -56,5 +59,9 @@ class Category(BaseModel):
         document['views']   = 0
         state = document.get('active', None)
         document['active']  = True if state is None else state
-        return super(Category, self).insert_one(document,
-                                                bypass_document_validation)
+        try:
+            return super(Category, self).insert_one(document,
+                                                    bypass_document_validation)
+        except DuplicateKeyError:
+            raise RestException("Category %s already exists" % document['_id'],
+                                400)
