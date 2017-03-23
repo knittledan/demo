@@ -83,11 +83,11 @@ def authorize(func):
         event   = args[0]
         context = args[1]
         e = None
-        acl = connect('acl').find_by_auth(auth_key(event))
-        if not acl:
-            e = RestException("Unauthorized", 403)
         try:
-            is_authorized(acl, event, context)
+            acl = connect('acl').find_by_auth(auth_key(event))
+            if not acl:
+                e = RestException("Unauthorized", 403)
+                is_authorized(acl, event, context)
         except RestException as e:
             pass
         return func(*args, exception=e or None)
