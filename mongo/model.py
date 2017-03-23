@@ -8,8 +8,9 @@ from datetime import datetime
 from util import RestException
 
 def encoder(data):
-    if data.get('created'):
-        data['created'] = str(data['created'])
+    for k, v in data.items():
+        if isinstance(v, datetime):
+            data[k] = str(v)
     return data
 
 

@@ -47,11 +47,9 @@ def category(event, context, exception=None):
 
 if __name__ == "__main__":
     aws_event = {
-        # 'headers': {'Authorization': 'Bearer 4bb074faf1b1f7d88910d94debed11e3'},
+        'header': {'Authorization': 'Bearer 4bb074faf1b1f7d88910d94debed11e3'},
         'path': {},
-        'payload': {'_id': 'Festivals', 'hero': 'http://s1.evcdn.com/store'
-                                                '/festivals/music-festivals/fest-portal-images/hub-hero.jpg'},
-        'context': {'http_method': 'POST'}
+        'context': {'http_method': 'GET'}
     }
     aws_context = type('', (object,), {'function_name': 'category'})()
     print(category(aws_event, aws_context))
