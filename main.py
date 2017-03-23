@@ -6,7 +6,6 @@
 from util import authorize, RestException, which_method, rest_response
 from mongo import connect
 import logging
-from json import dumps
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 
@@ -42,4 +41,5 @@ def category(event, context, exception=None):
     except RestException as e:
         return e.response
     except Exception as e:
+        log.exception(e)
         return e
