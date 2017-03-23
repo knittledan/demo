@@ -40,14 +40,7 @@ def category(event, context, exception=None):
             status_code=100
         )
     except Exception as e:
-        print(e)
-        log.exception(e)
-        return rest_response(
-            payload="Internal server error",
-            error=False,
-            response_status=True,
-            status_code=500
-        )
+        return e
 
 
 # if __name__ == "__main__":

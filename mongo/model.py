@@ -7,6 +7,11 @@ from pymongo.collection import Collection
 from datetime import datetime
 from util import RestException
 
+def encoder(data):
+    if data.get('created'):
+        data['created'] = str(data['created'])
+    return data
+
 
 class BaseModel(Collection):
     pass
@@ -28,13 +33,14 @@ class Category(BaseModel):
     required = ['hero']
 
     def find(self, *args, **kwargs):
-        return super(Category, self).find(*args, **kwargs)
+        r = super(Category, self).find(*args, **kwargs)
+        return [encoder(x) for x in r]
 
     def find_by_id(self, category_id):
         r = self.find_one_and_update({'_id': category_id},
                                      {'$inc': {'views': 1}},
                                      return_document=True)
-        return r
+        return encoder(r)
 
     def find_one(self, filter=None, *args, **kwargs):
         return super(Category, self).find(filter=filter, *args, **kwargs)
