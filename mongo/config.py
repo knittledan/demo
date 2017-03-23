@@ -6,7 +6,7 @@
 connections = {
     "category": {
         "client": {
-            "host": "54.219.140.116",
+            "host": "54.215.243.210",
             "port": 27017,
             "connect": False
         },
@@ -20,7 +20,7 @@ connections = {
     },
     "acl": {
         "client": {
-            "host": "54.219.140.116",
+            "host": "54.215.243.210",
             "port": 27017,
             "connect": False
         },
