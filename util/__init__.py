@@ -43,7 +43,7 @@ def auth_key(event):
     :param event: dict() aws api gateway request data
     :return: str() auth key
     """
-    headers = event.get('headers')
+    headers = event.get('header')
     if not headers:
         raise RestException("Headers are missing", 400)
     auth = headers.get('Authorization')
@@ -89,7 +89,7 @@ def authorize(func):
                 e = RestException("Unauthorized", 403)
                 is_authorized(acl, event, context)
         except RestException as e:
-            pass
+            return func(*args, exception=e)
         return func(*args, exception=e or None)
     return func_wrapper
 
