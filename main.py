@@ -39,6 +39,8 @@ def category(event, context, exception=None):
             response_status=True,
             status_code=100
         )
+    except RestException as e:
+        return e.response
     except Exception as e:
         return e
 
