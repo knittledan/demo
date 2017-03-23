@@ -3,7 +3,6 @@
 # ------------------------------------------------------------------------------
 #  __init__.py
 # ------------------------------------------------------------------------------
-from mongo import connect
 
 
 def rest_response(payload, status_code, error, response_status):
@@ -29,6 +28,7 @@ class RestException(Exception):
     """
 
     def __init__(self, payload, status_code, error=True, response_status=False):
+        self.message = payload
         self.status_code = status_code
         self.payload = payload
         self.error = error
@@ -38,6 +38,11 @@ class RestException(Exception):
 
 
 def auth_key(event):
+    """
+    Pulls the authorization key from the header.
+    :param event: dict() aws api gateway request data
+    :return: str() auth key
+    """
     headers = event.get('headers')
     if not headers:
         raise RestException("Headers are missing", 400)
@@ -51,10 +56,48 @@ def auth_key(event):
     return auth.strip()
 
 
+def is_authorized(acl, event, context):
+    """
+
+    :param acl: dict() result from mongo acl
+    :param event: dict() aws api gateway request data
+    :param context: obj() aws api gateway context
+    """
+    func_name   = context.function_name
+    http_method = event['context']['http_method']
+    if func_name not in acl:
+        raise RestException("Forbidden", 403)
+    if http_method not in acl[func_name]:
+        raise RestException("Forbidden method. You're allowed %s"
+                            % ', '.join(acl[func_name]), 403)
+
+
 def authorize(func):
+    """
+    Decorator to verify authentication for each method call
+    :param func: func() decorated function
+    :return: any() function results
+    """
     def func_wrapper(*args):
-        event = args[0]
-        if not connect('acl').find_by_auth(auth_key(event)):
-            e = RestException("Unauthorized", 401)
+        from mongo import connect
+        event   = args[0]
+        context = args[1]
+        e = None
+        acl = connect('acl').find_by_auth(auth_key(event))
+        if not acl:
+            e = RestException("Unauthorized", 403)
+        try:
+            is_authorized(acl, event, context)
+        except RestException as e:
+            pass
         return func(*args, exception=e or None)
     return func_wrapper
+
+
+def which_method(event):
+    """
+    Pulls the request method used by the client
+    :param event: dict() aws api gateway request data
+    :return: str() method
+    """
+    return event['context']['http_method']
