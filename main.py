@@ -35,8 +35,8 @@ def category(event, context, exception=None):
         return rest_response(
             payload=response,
             error=False,
-            response_status=True,
-            status_code=100
+            response_status=True if response else False,
+            status_code=200 if response else 404
         )
     except RestException as e:
         return e.response

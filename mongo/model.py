@@ -11,6 +11,8 @@ from pymongo.errors import DuplicateKeyError
 from util import RestException
 
 def encoder(data):
+    if not data:
+        return data
     for k, v in data.items():
         if isinstance(v, datetime):
             data[k] = str(v)
